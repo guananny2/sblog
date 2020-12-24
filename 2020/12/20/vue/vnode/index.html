@@ -20,17 +20,22 @@
     var CONFIG = {"hostname":"guananny2.github.io","root":"/sblog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="对对对">
+  <meta name="description" content="为什么要引入虚拟DOM?频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？从解析HTML到生成DOM树再到页面渲染，浏览器需要渲染引擎处理一系列的操作，才能将页面绘制出来。  webkit主流程如图，在DOM树修改了之后，还需要经过样式计算、布局、分成、图层绘制、栅格化操作、合成和显示这些流程，如果频繁操作DOM,那么势必会影响浏览器的性能。 样式计算 把CSS转换">
 <meta property="og:type" content="article">
 <meta property="og:title" content="虚拟DOM简介">
 <meta property="og:url" content="https://guananny2.github.io/sblog/2020/12/20/vue/vnode/index.html">
 <meta property="og:site_name" content="shiyaping">
-<meta property="og:description" content="对对对">
+<meta property="og:description" content="为什么要引入虚拟DOM?频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？从解析HTML到生成DOM树再到页面渲染，浏览器需要渲染引擎处理一系列的操作，才能将页面绘制出来。  webkit主流程如图，在DOM树修改了之后，还需要经过样式计算、布局、分成、图层绘制、栅格化操作、合成和显示这些流程，如果频繁操作DOM,那么势必会影响浏览器的性能。 样式计算 把CSS转换">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/vue/webkit.png">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/vue/layer.png">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/vue/render.png">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/vue/pools.png">
 <meta property="article:published_time" content="2020-12-20T05:49:44.000Z">
-<meta property="article:modified_time" content="2020-12-23T05:59:23.843Z">
+<meta property="article:modified_time" content="2020-12-24T00:40:41.585Z">
 <meta property="article:author" content="shiyaping">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://guananny2.github.io/sblog/images/vue/webkit.png">
 
 <link rel="canonical" href="https://guananny2.github.io/sblog/2020/12/20/vue/vnode/">
 
@@ -196,7 +201,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-23 13:59:23" itemprop="dateModified" datetime="2020-12-23T13:59:23+08:00">2020-12-23</time>
+                <time title="Modified: 2020-12-24 08:40:41" itemprop="dateModified" datetime="2020-12-24T08:40:41+08:00">2020-12-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -219,7 +224,44 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>对对对</p>
+        <h2 id="为什么要引入虚拟DOM"><a href="#为什么要引入虚拟DOM" class="headerlink" title="为什么要引入虚拟DOM?"></a>为什么要引入虚拟DOM?</h2><h3 id="频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？"><a href="#频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？" class="headerlink" title="频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？"></a>频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？</h3><p>从解析HTML到生成DOM树再到页面渲染，浏览器需要渲染引擎处理一系列的操作，才能将页面绘制出来。</p>
+<img src="/sblog/images/vue/webkit.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<p>webkit主流程<br>如图，在DOM树修改了之后，还需要经过样式计算、布局、分成、图层绘制、栅格化操作、合成和显示这些流程，如果频繁操作DOM,那么势必会影响浏览器的性能。</p>
+<h4 id="样式计算"><a href="#样式计算" class="headerlink" title="样式计算"></a>样式计算</h4><ul>
+<li>把CSS转换成浏览器能理解的结构<ul>
+<li>link外部css文件</li>
+<li>style标记内的css</li>
+<li>元素内嵌css<br>执行转换操作，将css文本转换成styleSheets</li>
+</ul>
+</li>
+<li>标准化样式表属性值<br>如：red标准化为rgb(255,0,0) bold标准化为700</li>
+<li>计算DOM节点具体样式<ul>
+<li>css继承<br>所有子节点都会继承父节点的样式</li>
+<li>层叠规则</li>
+</ul>
+</li>
+</ul>
+<h4 id="布局"><a href="#布局" class="headerlink" title="布局"></a>布局</h4><ul>
+<li>创建布局树<br>遍历DOM树所有节点，把这些节点加到布局树中，不可见节点忽略。</li>
+<li>布局计算</li>
+</ul>
+<h4 id="分成"><a href="#分成" class="headerlink" title="分成"></a>分成</h4><img src="/sblog/images/vue/layer.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<p>布局树和图层树的关系示意图<br>并不是布局树的每个节点都包含一个图层，如果一个节点没有对应的图层，这个节点就从属于父节点的图层。<br>满足什么条件，渲染引擎才会为特定的节点创建新的层呢？</p>
+<ul>
+<li>拥有层叠上下文属性的元素会被提升为单独的一层</li>
+<li>需要裁减的地方会被创建为图层</li>
+</ul>
+<h4 id="图层绘制"><a href="#图层绘制" class="headerlink" title="图层绘制"></a>图层绘制</h4><p>把图层的绘制拆分成很懂小的绘制指令，把这些指令按照顺序组成一个待绘制列表。</p>
+<img src="/sblog/images/vue/render.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<p>渲染流水线示意图<br>如图，渲染进程的主线程执行完图层绘制之后，将绘制列表提交给合成线程。</p>
+<h4 id="栅格化操作"><a href="#栅格化操作" class="headerlink" title="栅格化操作"></a>栅格化操作</h4><ul>
+<li>图块（tile）<br>用户能看到的部分叫视口（viewport）,有的图层很大，页面滚动很久才能滚动到底部，要绘制图层所有内容的话，产生太大的开销，基于这个原因，合成线程将图层划分为图块。<br>栅格化是将图块转换为位图，图块是栅格化执行的最小单位。<br>渲染进程维护了一个栅格化的线程池。<img src="/sblog/images/vue/pools.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+合成线程提交图块给栅格化线程池</li>
+</ul>
+<p>渲染进程把生成图块的指令发送给GPU,然后再GPU中执行生成图块位图，并保存在GPU内存中。</p>
+<h4 id="合成和显示"><a href="#合成和显示" class="headerlink" title="合成和显示"></a>合成和显示</h4><p>浏览器接收合成线程绘制图块的命令—-”DrawQuard“,将页面内容绘制到内存中，最终显示在屏幕上。</p>
+<p>所以，生成DOM树之后，浏览器还需要经过样式计算、布局、分成、图层绘制、栅格化操作、合成显示一系列的流程，才能渲染显示在屏幕上，如果用户频繁的操作DOM,造成页面重绘或回流，浏览器仍需要按流程处理生成页面，会影响浏览器的性能。</p>
+<h3 id="什么是虚拟DOM"><a href="#什么是虚拟DOM" class="headerlink" title="什么是虚拟DOM"></a>什么是虚拟DOM</h3><p>虚拟DOM是普通的JavaScript对象，用来描述一个真实的DOM元素。</p>
 
     </div>
 
@@ -298,6 +340,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要引入虚拟DOM"><span class="nav-number">1.</span> <span class="nav-text">为什么要引入虚拟DOM?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？"><span class="nav-number">1.1.</span> <span class="nav-text">频繁的操作DOM应发样式的改变，比较耗费浏览器的性能，那么为什么会耗费浏览器性能？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#样式计算"><span class="nav-number">1.1.1.</span> <span class="nav-text">样式计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#布局"><span class="nav-number">1.1.2.</span> <span class="nav-text">布局</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分成"><span class="nav-number">1.1.3.</span> <span class="nav-text">分成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#图层绘制"><span class="nav-number">1.1.4.</span> <span class="nav-text">图层绘制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#栅格化操作"><span class="nav-number">1.1.5.</span> <span class="nav-text">栅格化操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#合成和显示"><span class="nav-number">1.1.6.</span> <span class="nav-text">合成和显示</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是虚拟DOM"><span class="nav-number">1.2.</span> <span class="nav-text">什么是虚拟DOM</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
