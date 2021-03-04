@@ -1,7 +1,7 @@
 ---
 title: 虚拟DOM简介
 date: 2020-12-20 13:49:44
-tags: [vue]
+tags: [Vue]
 categories: VUE
 ---
 

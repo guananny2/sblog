@@ -1,7 +1,7 @@
 ---
 title: vue2.0响应式原理
 date: 2020-07-27 09:49:44
-tags: [vue]
+tags: [Vue]
 categories: VUE
 ---
 
