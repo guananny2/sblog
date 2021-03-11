@@ -20,15 +20,24 @@
     var CONFIG = {"hostname":"guananny2.github.io","root":"/sblog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="shiyaping">
-<meta property="og:url" content="https://guananny2.github.io/sblog/tags/promise/index.html">
+  <meta name="description" content="重排、重绘与合成结合渲染流程图来理解一下浏览器的重排、重绘和合成的执行过程。 重排重排是指更新了浏览器的几何位置   通过上图可以看出，通过javascript或者css改变了元素的几何属性，浏览器会触发重新布局，解析之后的一系列的阶段，这个过程就叫重排。重排需要更新完整的渲染流水线，开销是最大的。 重绘重绘是指更新元素的绘制属性   通过上图可以看出，修改了元素的背景颜色，由于并没有引起元素几何">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器重排与重绘">
+<meta property="og:url" content="https://guananny2.github.io/sblog/2021/03/10/chrome/render/index.html">
 <meta property="og:site_name" content="shiyaping">
+<meta property="og:description" content="重排、重绘与合成结合渲染流程图来理解一下浏览器的重排、重绘和合成的执行过程。 重排重排是指更新了浏览器的几何位置   通过上图可以看出，通过javascript或者css改变了元素的几何属性，浏览器会触发重新布局，解析之后的一系列的阶段，这个过程就叫重排。重排需要更新完整的渲染流水线，开销是最大的。 重绘重绘是指更新元素的绘制属性   通过上图可以看出，修改了元素的背景颜色，由于并没有引起元素几何">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/chrome/render/render1.png">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/chrome/render/render2.png">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/chrome/render/render3.png">
+<meta property="article:published_time" content="2021-03-10T12:49:44.000Z">
+<meta property="article:modified_time" content="2021-03-11T06:36:23.034Z">
 <meta property="article:author" content="shiyaping">
+<meta property="article:tag" content="chrome">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://guananny2.github.io/sblog/images/chrome/render/render1.png">
 
-<link rel="canonical" href="https://guananny2.github.io/sblog/tags/promise/">
+<link rel="canonical" href="https://guananny2.github.io/sblog/2021/03/10/chrome/render/">
 
 
 <script id="page-configurations">
@@ -36,12 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: promise | shiyaping</title>
+  <title>浏览器重排与重绘 | shiyaping</title>
   
 
 
@@ -155,57 +164,113 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">promise
-          <small>Tag</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2021/03/10/chrome/render/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/sblog/images/avatar.gif">
+      <meta itemprop="name" content="shiyaping">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="shiyaping">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浏览器重排与重绘
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-10 20:49:44" itemprop="dateCreated datePublished" datetime="2021-03-10T20:49:44+08:00">2021-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-11 14:36:23" itemprop="dateModified" datetime="2021-03-11T14:36:23+08:00">2021-03-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/sblog/categories/Chrome/" itemprop="url" rel="index"><span itemprop="name">Chrome</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <h3 id="重排、重绘与合成"><a href="#重排、重绘与合成" class="headerlink" title="重排、重绘与合成"></a>重排、重绘与合成</h3><p>结合渲染流程图来理解一下浏览器的重排、重绘和合成的执行过程。</p>
+<h4 id="重排"><a href="#重排" class="headerlink" title="重排"></a>重排</h4><p>重排是指更新了浏览器的几何位置</p>
+<img src="/sblog/images/chrome/render/render1.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+
+<p>通过上图可以看出，通过javascript或者css改变了元素的几何属性，浏览器会触发重新布局，解析之后的一系列的阶段，这个过程就叫重排。<br>重排需要更新完整的渲染流水线，开销是最大的。</p>
+<h4 id="重绘"><a href="#重绘" class="headerlink" title="重绘"></a>重绘</h4><p>重绘是指更新元素的绘制属性</p>
+<img src="/sblog/images/chrome/render/render2.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+
+<p>通过上图可以看出，修改了元素的背景颜色，由于并没有引起元素几何属性的变化，所以直接进入了绘制阶段，然后执行之后的一系列的阶段，这个过程叫重绘。<br>重绘省去了布局和分层阶段，所以执行效率要比重排要高一些。</p>
+<h4 id="合成"><a href="#合成" class="headerlink" title="合成"></a>合成</h4><p>直接合成阶段</p>
+<img src="/sblog/images/chrome/render/render3.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<p>通过上图可以看出，使用css的transform来实现动画效果，渲染引擎跳过布局和绘制，只执行后续的合成操作，这个过程叫合成。<br>合成省去了布局、分层和绘制的阶段，直接在非主线程上执行合成动画，执行效率是最高的。</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-02-19T20:49:44+08:00"
-              content="2021-02-19">
-          02-19
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/sblog/tags/chrome/" rel="tag"># chrome</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/sblog/2021/02/19/vue/promise/" itemprop="url">
-            <span itemprop="name">promise 源码解析</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/sblog/2021/02/19/vue/vue-router/" rel="prev" title="vue-router 源码解析">
+      <i class="fa fa-chevron-left"></i> vue-router 源码解析
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
 
           </div>
           
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -252,6 +317,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#重排、重绘与合成"><span class="nav-number">1.</span> <span class="nav-text">重排、重绘与合成</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#重排"><span class="nav-number">1.1.</span> <span class="nav-text">重排</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重绘"><span class="nav-number">1.2.</span> <span class="nav-text">重绘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#合成"><span class="nav-number">1.3.</span> <span class="nav-text">合成</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -267,14 +333,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/sblog/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/sblog/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -367,6 +433,25 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'ffe62cf84e3105cd0751',
+      clientSecret: 'dd2140e56eccf4465f95d94fcc99e41d2bf0967a',
+      repo        : 'sblog',
+      owner       : 'guananny2',
+      admin       : ['guananny2'],
+      id          : 'fb89c3f1810d06499428a78de1303da7',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

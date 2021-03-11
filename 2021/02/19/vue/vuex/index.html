@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/sblog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/sblog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/sblog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/sblog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/sblog/css/main.css">
+
+
+<link rel="stylesheet" href="/sblog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"guananny2.github.io","root":"/sblog/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。 Vuex模式思想Vuex的思想借鉴了Flux、Redux,与其他模式不同的是，Vuex是专门为Vue.js设计的状态管理库。 Flux架构思想Flux是一种架构思想，最大的特点是数据的“单向流动”   1、View: 视图层 2、Action: 动作 3、Dispatcher: 派发器 4、Store: 数据层数据流动的顺序：用户访">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vuex 源码解析">
+<meta property="og:url" content="https://guananny2.github.io/sblog/2021/02/19/vue/vuex/index.html">
+<meta property="og:site_name" content="shiyaping">
+<meta property="og:description" content="Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。 Vuex模式思想Vuex的思想借鉴了Flux、Redux,与其他模式不同的是，Vuex是专门为Vue.js设计的状态管理库。 Flux架构思想Flux是一种架构思想，最大的特点是数据的“单向流动”   1、View: 视图层 2、Action: 动作 3、Dispatcher: 派发器 4、Store: 数据层数据流动的顺序：用户访">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/vue/vuex/array.png">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/vue/vuex/vuex.png">
+<meta property="og:image" content="https://guananny2.github.io/sblog/images/vue/vuex/store.png">
+<meta property="article:published_time" content="2021-02-19T12:49:44.000Z">
+<meta property="article:modified_time" content="2021-03-05T05:50:57.413Z">
+<meta property="article:author" content="shiyaping">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="Vuex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://guananny2.github.io/sblog/images/vue/vuex/array.png">
+
+<link rel="canonical" href="https://guananny2.github.io/sblog/2021/02/19/vue/vuex/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>vuex 源码解析 | shiyaping</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/sblog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">shiyaping</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">个人技术博客，前端相关技术文档总结</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/sblog/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/sblog/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/sblog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/sblog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/sblog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2021/02/19/vue/vuex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/sblog/images/avatar.gif">
+      <meta itemprop="name" content="shiyaping">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="shiyaping">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vuex 源码解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-19 20:49:44" itemprop="dateCreated datePublished" datetime="2021-02-19T20:49:44+08:00">2021-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 13:50:57" itemprop="dateModified" datetime="2021-03-05T13:50:57+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/sblog/categories/vue/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。</p>
+<h3 id="Vuex模式思想"><a href="#Vuex模式思想" class="headerlink" title="Vuex模式思想"></a>Vuex模式思想</h3><p>Vuex的思想借鉴了Flux、Redux,与其他模式不同的是，Vuex是专门为Vue.js设计的状态管理库。</p>
+<h4 id="Flux架构思想"><a href="#Flux架构思想" class="headerlink" title="Flux架构思想"></a>Flux架构思想</h4><p>Flux是一种架构思想，最大的特点是数据的“单向流动”</p>
+<img src="/sblog/images/vue/vuex/array.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<ul>
+<li>1、View: 视图层</li>
+<li>2、Action: 动作</li>
+<li>3、Dispatcher: 派发器</li>
+<li>4、Store: 数据层<br>数据流动的顺序：<br>用户访问View,页面需要变化时，发出动作Action；Dispatcher收到动作后，要求Store进行相应的更新；store更新后，发出change事件，更新页面。在这一过程中，数据总是单向流动的，保证了流程的清晰。</li>
+</ul>
+<h4 id="Vuex架构思想"><a href="#Vuex架构思想" class="headerlink" title="Vuex架构思想"></a>Vuex架构思想</h4><p>Vuex也把组件的共享状态抽取出来，以一个全局单例模式管理。并且数据的流动也遵从“单向流动”的设计思想。</p>
+<img src="/sblog/images/vue/vuex/vuex.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<p>数据流动的顺序：</p>
+<ul>
+<li>1、同步数据<br>  用户访问View,页面需要变化时；调用commit来请求store中对应的mutation函数；store改变（Vue检测到数据变化，自动更新视图）</li>
+<li>2、异步数据<br>  用户访问View,页面需要变化时，派发动作action;action调用commit来请求store中对应的mutation函数；store改变（Vue检测到数据的变化，自动更新视图）</li>
+</ul>
+<h3 id="Vuex源码解析"><a href="#Vuex源码解析" class="headerlink" title="Vuex源码解析"></a>Vuex源码解析</h3><h4 id="Vuex的使用"><a href="#Vuex的使用" class="headerlink" title="Vuex的使用"></a>Vuex的使用</h4><img src="/sblog/images/vue/vuex/store.png" class="" width="378" height="339" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+
+<h4 id="Vuex的注册"><a href="#Vuex的注册" class="headerlink" title="Vuex的注册"></a>Vuex的注册</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">install</span> (<span class="params">_Vue</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (Vue &amp;&amp; _Vue === Vue) &#123;</span><br><span class="line">    <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">      <span class="built_in">console</span>.error(</span><br><span class="line">        <span class="string">'[vuex] already installed. Vue.use(Vuex) should be called only once.'</span></span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  Vue = _Vue</span><br><span class="line">  applyMixin(Vue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>已经注册过一次的就不再注册；调用applyMixin(Vue)进行注册</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">Vue</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> version = <span class="built_in">Number</span>(Vue.version.split(<span class="string">'.'</span>)[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (version &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">    Vue.mixin(&#123; <span class="attr">beforeCreate</span>: vuexInit &#125;)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// override init and inject vuex init procedure</span></span><br><span class="line">    <span class="comment">// for 1.x backwards compatibility.</span></span><br><span class="line">    <span class="keyword">const</span> _init = Vue.prototype._init</span><br><span class="line">    Vue.prototype._init = <span class="function"><span class="keyword">function</span> (<span class="params">options = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">      options.init = options.init</span><br><span class="line">        ? [vuexInit].concat(options.init)</span><br><span class="line">        : vuexInit</span><br><span class="line">      _init.call(<span class="keyword">this</span>, options)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Vuex init hook, injected into each instances init hooks list.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">vuexInit</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> options = <span class="keyword">this</span>.$options</span><br><span class="line">    <span class="comment">// store injection</span></span><br><span class="line">    <span class="keyword">if</span> (options.store) &#123;</span><br><span class="line">      <span class="keyword">this</span>.$store = <span class="keyword">typeof</span> options.store === <span class="string">'function'</span></span><br><span class="line">        ? options.store()</span><br><span class="line">        : options.store</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (options.parent &amp;&amp; options.parent.$store) &#123;</span><br><span class="line">      <span class="keyword">this</span>.$store = options.parent.$store</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据Vue的版本来分别注册；如果是2.X则使用 beforeCreate来注册；如果是1.X则使用_init来注册。<br>当从new Vue的时候，从options.store获取；当是非根组件时，子组件从父组件获取到$store，这样保证了每个组件都能取到$store</p>
+<h4 id="store的初始化"><a href="#store的初始化" class="headerlink" title="store的初始化"></a>store的初始化</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  mutations: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  modules: &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  router,</span><br><span class="line">  store,</span><br><span class="line">  render: <span class="function"><span class="params">h</span> =&gt;</span> h(App)</span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constructor</span> (options = &#123;&#125;) &#123;</span><br><span class="line">    <span class="comment">// 如果当前环境是浏览器环境，且没有安装 vuex ，那么就会自动安装</span></span><br><span class="line">    <span class="keyword">if</span> (!Vue &amp;&amp; <span class="keyword">typeof</span> <span class="built_in">window</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">window</span>.Vue) &#123;</span><br><span class="line">      install(<span class="built_in">window</span>.Vue)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 断言指定的环境是否满足</span></span><br><span class="line">    <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">      assert(Vue, <span class="string">`must call Vue.use(Vuex) before creating a store instance.`</span>)</span><br><span class="line">      assert(<span class="keyword">typeof</span> <span class="built_in">Promise</span> !== <span class="string">'undefined'</span>, <span class="string">`vuex requires a Promise polyfill in this browser.`</span>)</span><br><span class="line">      assert(<span class="keyword">this</span> <span class="keyword">instanceof</span> Store, <span class="string">`store must be called with the new operator.`</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">      plugins = [],</span><br><span class="line">      strict = <span class="literal">false</span></span><br><span class="line">    &#125; = options</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store internal state</span></span><br><span class="line">    <span class="keyword">this</span>._committing = <span class="literal">false</span> <span class="comment">// 是否在进行提交状态标识</span></span><br><span class="line">    <span class="keyword">this</span>._actions = <span class="built_in">Object</span>.create(<span class="literal">null</span>) <span class="comment">// acitons 操作对象</span></span><br><span class="line">    <span class="keyword">this</span>._actionSubscribers = [] <span class="comment">// action 订阅列表</span></span><br><span class="line">    <span class="keyword">this</span>._mutations = <span class="built_in">Object</span>.create(<span class="literal">null</span>)  <span class="comment">// mutations操作对象</span></span><br><span class="line">    <span class="keyword">this</span>._wrappedGetters = <span class="built_in">Object</span>.create(<span class="literal">null</span>)  <span class="comment">// 封装后的 getters 集合对象</span></span><br><span class="line">    <span class="keyword">this</span>._modules = <span class="keyword">new</span> ModuleCollection(options)  <span class="comment">// vuex 支持 store 分模块传入，存储分析后的 modules</span></span><br><span class="line">    <span class="keyword">this</span>._modulesNamespaceMap = <span class="built_in">Object</span>.create(<span class="literal">null</span>)  <span class="comment">// 模块命名空间 map</span></span><br><span class="line">    <span class="keyword">this</span>._subscribers = [] <span class="comment">// 订阅函数集合</span></span><br><span class="line">    <span class="keyword">this</span>._watcherVM = <span class="keyword">new</span> Vue()  <span class="comment">// Vue 组件用于 watch 监视变化</span></span><br><span class="line">    <span class="keyword">this</span>._makeLocalGettersCache = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 替换 this 中的 dispatch, commit 方法，将 this 指向 store</span></span><br><span class="line">    <span class="keyword">const</span> store = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">const</span> &#123; dispatch, commit &#125; = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">this</span>.dispatch = <span class="function"><span class="keyword">function</span> <span class="title">boundDispatch</span> (<span class="params">type, payload</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> dispatch.call(store, type, payload)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.commit = <span class="function"><span class="keyword">function</span> <span class="title">boundCommit</span> (<span class="params">type, payload, options</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> commit.call(store, type, payload, options)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 是否使用严格模式</span></span><br><span class="line">    <span class="keyword">this</span>.strict = strict</span><br><span class="line">    <span class="comment">// 数据树</span></span><br><span class="line">    <span class="keyword">const</span> state = <span class="keyword">this</span>._modules.root.state</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加载安装模块</span></span><br><span class="line">    installModule(<span class="keyword">this</span>, state, [], <span class="keyword">this</span>._modules.root)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重置虚拟 store</span></span><br><span class="line">    resetStoreVM(<span class="keyword">this</span>, state)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果使用了 plugins 那么挨个载入它们</span></span><br><span class="line">    plugins.forEach(<span class="function"><span class="params">plugin</span> =&gt;</span> plugin(<span class="keyword">this</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> useDevtools = options.devtools !== <span class="literal">undefined</span> ? options.devtools : Vue.config.devtools</span><br><span class="line">    <span class="keyword">if</span> (useDevtools) &#123;</span><br><span class="line">      devtoolPlugin(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="模块收集"><a href="#模块收集" class="headerlink" title="模块收集"></a>模块收集</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>._modules = <span class="keyword">new</span> ModuleCollection(options)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">ModuleCollection</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (rawRootModule) &#123;</span><br><span class="line">    <span class="comment">// register root module (Vuex.Store options)</span></span><br><span class="line">    <span class="keyword">this</span>.register([], rawRootModule, <span class="literal">false</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">get</span> (path) &#123;</span><br><span class="line">    <span class="keyword">return</span> path.reduce(<span class="function">(<span class="params"><span class="built_in">module</span>, key</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">module</span>.getChild(key)</span><br><span class="line">    &#125;, <span class="keyword">this</span>.root)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  getNamespace (path) &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="built_in">module</span> = <span class="keyword">this</span>.root</span><br><span class="line">    <span class="keyword">return</span> path.reduce(<span class="function">(<span class="params">namespace, key</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">module</span> = <span class="built_in">module</span>.getChild(key)</span><br><span class="line">      <span class="keyword">return</span> namespace + (<span class="built_in">module</span>.namespaced ? key + <span class="string">'/'</span> : <span class="string">''</span>)</span><br><span class="line">    &#125;, <span class="string">''</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update (rawRootModule) &#123;</span><br><span class="line">    update([], <span class="keyword">this</span>.root, rawRootModule)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  register (path, rawModule, runtime = <span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">      assertRawModule(path, rawModule)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> newModule = <span class="keyword">new</span> Module(rawModule, runtime)</span><br><span class="line">    <span class="keyword">if</span> (path.length === <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.root = newModule</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> parent = <span class="keyword">this</span>.get(path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">      parent.addChild(path[path.length - <span class="number">1</span>], newModule)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// register nested modules</span></span><br><span class="line">    <span class="keyword">if</span> (rawModule.modules) &#123;</span><br><span class="line">      forEachValue(rawModule.modules, (rawChildModule, key) =&gt; &#123;</span><br><span class="line">        <span class="keyword">this</span>.register(path.concat(key), rawChildModule, runtime)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  unregister (path) &#123;</span><br><span class="line">    <span class="keyword">const</span> parent = <span class="keyword">this</span>.get(path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">    <span class="keyword">const</span> key = path[path.length - <span class="number">1</span>]</span><br><span class="line">    <span class="keyword">const</span> child = parent.getChild(key)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!child) &#123;</span><br><span class="line">      <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">        <span class="built_in">console</span>.warn(</span><br><span class="line">          <span class="string">`[vuex] trying to unregister module '<span class="subst">$&#123;key&#125;</span>', which is `</span> +</span><br><span class="line">          <span class="string">`not registered`</span></span><br><span class="line">        )</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!child.runtime) &#123;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    parent.removeChild(key)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  isRegistered (path) &#123;</span><br><span class="line">    <span class="keyword">const</span> parent = <span class="keyword">this</span>.get(path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">    <span class="keyword">const</span> key = path[path.length - <span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (parent) &#123;</span><br><span class="line">      <span class="keyword">return</span> parent.hasChild(key)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着再看Module</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Module</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (rawModule, runtime) &#123;</span><br><span class="line">    <span class="keyword">this</span>.runtime = runtime</span><br><span class="line">    <span class="comment">// Store some children item</span></span><br><span class="line">    <span class="keyword">this</span>._children = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">    <span class="comment">// Store the origin module object which passed by programmer</span></span><br><span class="line">    <span class="keyword">this</span>._rawModule = rawModule</span><br><span class="line">    <span class="keyword">const</span> rawState = rawModule.state</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Store the origin module's state</span></span><br><span class="line">    <span class="keyword">this</span>.state = (<span class="keyword">typeof</span> rawState === <span class="string">'function'</span> ? rawState() : rawState) || &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">get</span> namespaced () &#123;</span><br><span class="line">    <span class="keyword">return</span> !!<span class="keyword">this</span>._rawModule.namespaced</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  addChild (key, <span class="built_in">module</span>) &#123;</span><br><span class="line">    <span class="keyword">this</span>._children[key] = <span class="built_in">module</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  removeChild (key) &#123;</span><br><span class="line">    <span class="keyword">delete</span> <span class="keyword">this</span>._children[key]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  getChild (key) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>._children[key]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  hasChild (key) &#123;</span><br><span class="line">    <span class="keyword">return</span> key <span class="keyword">in</span> <span class="keyword">this</span>._children</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update (rawModule) &#123;</span><br><span class="line">    <span class="keyword">this</span>._rawModule.namespaced = rawModule.namespaced</span><br><span class="line">    <span class="keyword">if</span> (rawModule.actions) &#123;</span><br><span class="line">      <span class="keyword">this</span>._rawModule.actions = rawModule.actions</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (rawModule.mutations) &#123;</span><br><span class="line">      <span class="keyword">this</span>._rawModule.mutations = rawModule.mutations</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (rawModule.getters) &#123;</span><br><span class="line">      <span class="keyword">this</span>._rawModule.getters = rawModule.getters</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachChild (fn) &#123;</span><br><span class="line">    forEachValue(<span class="keyword">this</span>._children, fn)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachGetter (fn) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._rawModule.getters) &#123;</span><br><span class="line">      forEachValue(<span class="keyword">this</span>._rawModule.getters, fn)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachAction (fn) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._rawModule.actions) &#123;</span><br><span class="line">      forEachValue(<span class="keyword">this</span>._rawModule.actions, fn)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachMutation (fn) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._rawModule.mutations) &#123;</span><br><span class="line">      forEachValue(<span class="keyword">this</span>._rawModule.mutations, fn)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里调用 ModuleCollection 构造函数，通过 path 的长度判断是否为根 module，首先进行根 module 的注册，然后递归遍历所有的 module，子 module 添加其父 module 的 _children 属性上，最终形成一棵树</p>
+<h5 id="模块安装"><a href="#模块安装" class="headerlink" title="模块安装"></a>模块安装</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里是module处理的核心，包括处理根module、命名空间、action、mutation、getters和递归注册子module</span></span><br><span class="line">installModule(<span class="keyword">this</span>, state, [], <span class="keyword">this</span>._modules.root)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">installModule</span> (<span class="params">store, rootState, path, module, hot</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> isRoot = !path.length</span><br><span class="line">  <span class="comment">// 获取模块的命名空间</span></span><br><span class="line">  <span class="keyword">const</span> namespace = store._modules.getNamespace(path)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 存在命名空间时，加入到 moduleNamespaceMap 中</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">module</span>.namespaced) &#123;</span><br><span class="line">    <span class="keyword">if</span> (store._modulesNamespaceMap[namespace] &amp;&amp; __DEV__) &#123;</span><br><span class="line">      <span class="built_in">console</span>.error(<span class="string">`[vuex] duplicate namespace <span class="subst">$&#123;namespace&#125;</span> for the namespaced module <span class="subst">$&#123;path.join(<span class="string">'/'</span>)&#125;</span>`</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    store._modulesNamespaceMap[namespace] = <span class="built_in">module</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果当前不是子模块也不是热更新状态，那么就是新增子模块，这个时候要取到父模块</span></span><br><span class="line">  <span class="comment">// 然后插入到父模块的子模块列表中</span></span><br><span class="line">  <span class="keyword">if</span> (!isRoot &amp;&amp; !hot) &#123;</span><br><span class="line">    <span class="keyword">const</span> parentState = getNestedState(rootState, path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">    <span class="keyword">const</span> moduleName = path[path.length - <span class="number">1</span>]</span><br><span class="line">    store._withCommit(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">        <span class="keyword">if</span> (moduleName <span class="keyword">in</span> parentState) &#123;</span><br><span class="line">          <span class="built_in">console</span>.warn(</span><br><span class="line">            <span class="string">`[vuex] state field "<span class="subst">$&#123;moduleName&#125;</span>" was overridden by a module with the same name at "<span class="subst">$&#123;path.join(<span class="string">'.'</span>)&#125;</span>"`</span></span><br><span class="line">          )</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      Vue.set(parentState, moduleName, <span class="built_in">module</span>.state)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 拿到当前的上下文环境</span></span><br><span class="line">  <span class="keyword">const</span> local = <span class="built_in">module</span>.context = makeLocalContext(store, namespace, path)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 使用模块的方法挨个为 mutation, action, getters, child 注册</span></span><br><span class="line">  <span class="built_in">module</span>.forEachMutation(<span class="function">(<span class="params">mutation, key</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> namespacedType = namespace + key</span><br><span class="line">    registerMutation(store, namespacedType, mutation, local)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">module</span>.forEachAction(<span class="function">(<span class="params">action, key</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> type = action.root ? key : namespace + key</span><br><span class="line">    <span class="keyword">const</span> handler = action.handler || action</span><br><span class="line">    registerAction(store, type, handler, local)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">module</span>.forEachGetter(<span class="function">(<span class="params">getter, key</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> namespacedType = namespace + key</span><br><span class="line">    registerGetter(store, namespacedType, getter, local)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">module</span>.forEachChild(<span class="function">(<span class="params">child, key</span>) =&gt;</span> &#123;</span><br><span class="line">    installModule(store, rootState, path.concat(key), child, hot)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先保存 namespaced 模块到 store._modulesNamespaceMap，再判断是否为根组件且不是 hot，得到父级 module 的 state 和当前 module 的 name，调用 Vue.set(parentState, moduleName, module.state)将当前 module 的 state 挂载到父 state 上。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/sblog/tags/Vue/" rel="tag"># Vue</a>
+              <a href="/sblog/tags/Vuex/" rel="tag"># Vuex</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/sblog/2020/12/20/vue/vnode/" rel="prev" title="虚拟DOM简介">
+      <i class="fa fa-chevron-left"></i> 虚拟DOM简介
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/sblog/2021/02/19/chrome/v8/" rel="next" title="浏览器v8">
+      浏览器v8 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Vuex模式思想"><span class="nav-number">1.</span> <span class="nav-text">Vuex模式思想</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Flux架构思想"><span class="nav-number">1.1.</span> <span class="nav-text">Flux架构思想</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Vuex架构思想"><span class="nav-number">1.2.</span> <span class="nav-text">Vuex架构思想</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vuex源码解析"><span class="nav-number">2.</span> <span class="nav-text">Vuex源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Vuex的使用"><span class="nav-number">2.1.</span> <span class="nav-text">Vuex的使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Vuex的注册"><span class="nav-number">2.2.</span> <span class="nav-text">Vuex的注册</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#store的初始化"><span class="nav-number">2.3.</span> <span class="nav-text">store的初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#模块收集"><span class="nav-number">2.3.1.</span> <span class="nav-text">模块收集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#模块安装"><span class="nav-number">2.3.2.</span> <span class="nav-text">模块安装</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="shiyaping"
+      src="/sblog/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">shiyaping</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/sblog/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/sblog/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/sblog/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">shiyaping</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/sblog/lib/anime.min.js"></script>
+  <script src="/sblog/lib/velocity/velocity.min.js"></script>
+  <script src="/sblog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/sblog/js/utils.js"></script>
+
+<script src="/sblog/js/motion.js"></script>
+
+
+<script src="/sblog/js/schemes/pisces.js"></script>
+
+
+<script src="/sblog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'ffe62cf84e3105cd0751',
+      clientSecret: 'dd2140e56eccf4465f95d94fcc99e41d2bf0967a',
+      repo        : 'sblog',
+      owner       : 'guananny2',
+      admin       : ['guananny2'],
+      id          : '83bd982342da1d5cf87e67954f3914db',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

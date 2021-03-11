@@ -161,7 +161,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2021/02/19/chrome/v8/">
+    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2021/03/10/chrome/render/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/sblog/images/avatar.gif">
@@ -175,7 +175,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/sblog/2021/02/19/chrome/v8/" class="post-title-link" itemprop="url">浏览器v8</a>
+            <a href="/sblog/2021/03/10/chrome/render/" class="post-title-link" itemprop="url">浏览器重排与重绘</a>
         </h2>
 
         <div class="post-meta">
@@ -185,14 +185,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-02-19 20:49:44" itemprop="dateCreated datePublished" datetime="2021-02-19T20:49:44+08:00">2021-02-19</time>
+              <time title="Created: 2021-03-10 20:49:44" itemprop="dateCreated datePublished" datetime="2021-03-10T20:49:44+08:00">2021-03-10</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-04 14:48:40" itemprop="dateModified" datetime="2021-03-04T14:48:40+08:00">2021-03-04</time>
+                <time title="Modified: 2021-03-11 14:36:23" itemprop="dateModified" datetime="2021-03-11T14:36:23+08:00">2021-03-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -215,80 +215,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
-      
-    </div>
+          <h3 id="重排、重绘与合成"><a href="#重排、重绘与合成" class="headerlink" title="重排、重绘与合成"></a>重排、重绘与合成</h3><p>结合渲染流程图来理解一下浏览器的重排、重绘和合成的执行过程。</p>
+<h4 id="重排"><a href="#重排" class="headerlink" title="重排"></a>重排</h4><p>重排是指更新了浏览器的几何位置</p>
+<img src="/sblog/images/chrome/render/render1.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+<p>通过上图可以看出，通过javascript或者css改变了元素的几何属性，浏览器会触发重新布局，解析之后的一系列的阶段，这个过程就叫重排。<br>重排需要更新完整的渲染流水线，开销是最大的。</p>
+<h4 id="重绘"><a href="#重绘" class="headerlink" title="重绘"></a>重绘</h4><p>重绘是指更新元素的绘制属性</p>
+<img src="/sblog/images/chrome/render/render2.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2021/02/19/vue/promise/">
+<p>通过上图可以看出，修改了元素的背景颜色，由于并没有引起元素几何属性的变化，所以直接进入了绘制阶段，然后执行之后的一系列的阶段，这个过程叫重绘。<br>重绘省去了布局和分层阶段，所以执行效率要比重排要高一些。</p>
+<h4 id="合成"><a href="#合成" class="headerlink" title="合成"></a>合成</h4><p>直接合成阶段</p>
+<img src="/sblog/images/chrome/render/render3.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<p>通过上图可以看出，使用css的transform来实现动画效果，渲染引擎跳过布局和绘制，只执行后续的合成操作，这个过程叫合成。<br>合成省去了布局、分层和绘制的阶段，直接在非主线程上执行合成动画，执行效率是最高的。</p>
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/sblog/images/avatar.gif">
-      <meta itemprop="name" content="shiyaping">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="shiyaping">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/sblog/2021/02/19/vue/promise/" class="post-title-link" itemprop="url">promise 源码解析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-19 20:49:44" itemprop="dateCreated datePublished" datetime="2021-02-19T20:49:44+08:00">2021-02-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-04 14:39:27" itemprop="dateModified" datetime="2021-03-04T14:39:27+08:00">2021-03-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sblog/categories/ES6/" itemprop="url" rel="index"><span itemprop="name">ES6</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
       
     </div>
 
@@ -338,7 +277,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-04 14:39:02" itemprop="dateModified" datetime="2021-03-04T14:39:02+08:00">2021-03-04</time>
+                <time title="Modified: 2021-03-05 09:23:45" itemprop="dateModified" datetime="2021-03-05T09:23:45+08:00">2021-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -346,7 +285,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sblog/categories/VueRouter/" itemprop="url" rel="index"><span itemprop="name">VueRouter</span></a>
+                  <a href="/sblog/categories/vue/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
                 </span>
             </span>
 
@@ -442,6 +381,186 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2021/02/19/chrome/v8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/sblog/images/avatar.gif">
+      <meta itemprop="name" content="shiyaping">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="shiyaping">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/sblog/2021/02/19/chrome/v8/" class="post-title-link" itemprop="url">浏览器v8</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-19 20:49:44" itemprop="dateCreated datePublished" datetime="2021-02-19T20:49:44+08:00">2021-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 09:23:45" itemprop="dateModified" datetime="2021-03-05T09:23:45+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/sblog/categories/Chrome/" itemprop="url" rel="index"><span itemprop="name">Chrome</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2021/02/19/vue/vuex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/sblog/images/avatar.gif">
+      <meta itemprop="name" content="shiyaping">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="shiyaping">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/sblog/2021/02/19/vue/vuex/" class="post-title-link" itemprop="url">vuex 源码解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-19 20:49:44" itemprop="dateCreated datePublished" datetime="2021-02-19T20:49:44+08:00">2021-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 13:50:57" itemprop="dateModified" datetime="2021-03-05T13:50:57+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/sblog/categories/vue/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。</p>
+<h3 id="Vuex模式思想"><a href="#Vuex模式思想" class="headerlink" title="Vuex模式思想"></a>Vuex模式思想</h3><p>Vuex的思想借鉴了Flux、Redux,与其他模式不同的是，Vuex是专门为Vue.js设计的状态管理库。</p>
+<h4 id="Flux架构思想"><a href="#Flux架构思想" class="headerlink" title="Flux架构思想"></a>Flux架构思想</h4><p>Flux是一种架构思想，最大的特点是数据的“单向流动”</p>
+<img src="/sblog/images/vue/vuex/array.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<ul>
+<li>1、View: 视图层</li>
+<li>2、Action: 动作</li>
+<li>3、Dispatcher: 派发器</li>
+<li>4、Store: 数据层<br>数据流动的顺序：<br>用户访问View,页面需要变化时，发出动作Action；Dispatcher收到动作后，要求Store进行相应的更新；store更新后，发出change事件，更新页面。在这一过程中，数据总是单向流动的，保证了流程的清晰。</li>
+</ul>
+<h4 id="Vuex架构思想"><a href="#Vuex架构思想" class="headerlink" title="Vuex架构思想"></a>Vuex架构思想</h4><p>Vuex也把组件的共享状态抽取出来，以一个全局单例模式管理。并且数据的流动也遵从“单向流动”的设计思想。</p>
+<img src="/sblog/images/vue/vuex/vuex.png" class="" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+<p>数据流动的顺序：</p>
+<ul>
+<li>1、同步数据<br>  用户访问View,页面需要变化时；调用commit来请求store中对应的mutation函数；store改变（Vue检测到数据变化，自动更新视图）</li>
+<li>2、异步数据<br>  用户访问View,页面需要变化时，派发动作action;action调用commit来请求store中对应的mutation函数；store改变（Vue检测到数据的变化，自动更新视图）</li>
+</ul>
+<h3 id="Vuex源码解析"><a href="#Vuex源码解析" class="headerlink" title="Vuex源码解析"></a>Vuex源码解析</h3><h4 id="Vuex的使用"><a href="#Vuex的使用" class="headerlink" title="Vuex的使用"></a>Vuex的使用</h4><img src="/sblog/images/vue/vuex/store.png" class="" width="378" height="339" title="点击查看大图:vi&#x2F;vim-cheat-sheet">
+
+<h4 id="Vuex的注册"><a href="#Vuex的注册" class="headerlink" title="Vuex的注册"></a>Vuex的注册</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">install</span> (<span class="params">_Vue</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (Vue &amp;&amp; _Vue === Vue) &#123;</span><br><span class="line">    <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">      <span class="built_in">console</span>.error(</span><br><span class="line">        <span class="string">'[vuex] already installed. Vue.use(Vuex) should be called only once.'</span></span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  Vue = _Vue</span><br><span class="line">  applyMixin(Vue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>已经注册过一次的就不再注册；调用applyMixin(Vue)进行注册</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> (<span class="params">Vue</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> version = <span class="built_in">Number</span>(Vue.version.split(<span class="string">'.'</span>)[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (version &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">    Vue.mixin(&#123; <span class="attr">beforeCreate</span>: vuexInit &#125;)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// override init and inject vuex init procedure</span></span><br><span class="line">    <span class="comment">// for 1.x backwards compatibility.</span></span><br><span class="line">    <span class="keyword">const</span> _init = Vue.prototype._init</span><br><span class="line">    Vue.prototype._init = <span class="function"><span class="keyword">function</span> (<span class="params">options = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">      options.init = options.init</span><br><span class="line">        ? [vuexInit].concat(options.init)</span><br><span class="line">        : vuexInit</span><br><span class="line">      _init.call(<span class="keyword">this</span>, options)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Vuex init hook, injected into each instances init hooks list.</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">vuexInit</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> options = <span class="keyword">this</span>.$options</span><br><span class="line">    <span class="comment">// store injection</span></span><br><span class="line">    <span class="keyword">if</span> (options.store) &#123;</span><br><span class="line">      <span class="keyword">this</span>.$store = <span class="keyword">typeof</span> options.store === <span class="string">'function'</span></span><br><span class="line">        ? options.store()</span><br><span class="line">        : options.store</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (options.parent &amp;&amp; options.parent.$store) &#123;</span><br><span class="line">      <span class="keyword">this</span>.$store = options.parent.$store</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据Vue的版本来分别注册；如果是2.X则使用 beforeCreate来注册；如果是1.X则使用_init来注册。<br>当从new Vue的时候，从options.store获取；当是非根组件时，子组件从父组件获取到$store，这样保证了每个组件都能取到$store</p>
+<h4 id="store的初始化"><a href="#store的初始化" class="headerlink" title="store的初始化"></a>store的初始化</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  mutations: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  actions: &#123;</span><br><span class="line">  &#125;,</span><br><span class="line">  modules: &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  router,</span><br><span class="line">  store,</span><br><span class="line">  render: <span class="function"><span class="params">h</span> =&gt;</span> h(App)</span><br><span class="line">&#125;).$mount(<span class="string">'#app'</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constructor</span> (options = &#123;&#125;) &#123;</span><br><span class="line">    <span class="comment">// 如果当前环境是浏览器环境，且没有安装 vuex ，那么就会自动安装</span></span><br><span class="line">    <span class="keyword">if</span> (!Vue &amp;&amp; <span class="keyword">typeof</span> <span class="built_in">window</span> !== <span class="string">'undefined'</span> &amp;&amp; <span class="built_in">window</span>.Vue) &#123;</span><br><span class="line">      install(<span class="built_in">window</span>.Vue)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 断言指定的环境是否满足</span></span><br><span class="line">    <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">      assert(Vue, <span class="string">`must call Vue.use(Vuex) before creating a store instance.`</span>)</span><br><span class="line">      assert(<span class="keyword">typeof</span> <span class="built_in">Promise</span> !== <span class="string">'undefined'</span>, <span class="string">`vuex requires a Promise polyfill in this browser.`</span>)</span><br><span class="line">      assert(<span class="keyword">this</span> <span class="keyword">instanceof</span> Store, <span class="string">`store must be called with the new operator.`</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">      plugins = [],</span><br><span class="line">      strict = <span class="literal">false</span></span><br><span class="line">    &#125; = options</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store internal state</span></span><br><span class="line">    <span class="keyword">this</span>._committing = <span class="literal">false</span> <span class="comment">// 是否在进行提交状态标识</span></span><br><span class="line">    <span class="keyword">this</span>._actions = <span class="built_in">Object</span>.create(<span class="literal">null</span>) <span class="comment">// acitons 操作对象</span></span><br><span class="line">    <span class="keyword">this</span>._actionSubscribers = [] <span class="comment">// action 订阅列表</span></span><br><span class="line">    <span class="keyword">this</span>._mutations = <span class="built_in">Object</span>.create(<span class="literal">null</span>)  <span class="comment">// mutations操作对象</span></span><br><span class="line">    <span class="keyword">this</span>._wrappedGetters = <span class="built_in">Object</span>.create(<span class="literal">null</span>)  <span class="comment">// 封装后的 getters 集合对象</span></span><br><span class="line">    <span class="keyword">this</span>._modules = <span class="keyword">new</span> ModuleCollection(options)  <span class="comment">// vuex 支持 store 分模块传入，存储分析后的 modules</span></span><br><span class="line">    <span class="keyword">this</span>._modulesNamespaceMap = <span class="built_in">Object</span>.create(<span class="literal">null</span>)  <span class="comment">// 模块命名空间 map</span></span><br><span class="line">    <span class="keyword">this</span>._subscribers = [] <span class="comment">// 订阅函数集合</span></span><br><span class="line">    <span class="keyword">this</span>._watcherVM = <span class="keyword">new</span> Vue()  <span class="comment">// Vue 组件用于 watch 监视变化</span></span><br><span class="line">    <span class="keyword">this</span>._makeLocalGettersCache = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 替换 this 中的 dispatch, commit 方法，将 this 指向 store</span></span><br><span class="line">    <span class="keyword">const</span> store = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">const</span> &#123; dispatch, commit &#125; = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">this</span>.dispatch = <span class="function"><span class="keyword">function</span> <span class="title">boundDispatch</span> (<span class="params">type, payload</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> dispatch.call(store, type, payload)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.commit = <span class="function"><span class="keyword">function</span> <span class="title">boundCommit</span> (<span class="params">type, payload, options</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> commit.call(store, type, payload, options)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 是否使用严格模式</span></span><br><span class="line">    <span class="keyword">this</span>.strict = strict</span><br><span class="line">    <span class="comment">// 数据树</span></span><br><span class="line">    <span class="keyword">const</span> state = <span class="keyword">this</span>._modules.root.state</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加载安装模块</span></span><br><span class="line">    installModule(<span class="keyword">this</span>, state, [], <span class="keyword">this</span>._modules.root)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重置虚拟 store</span></span><br><span class="line">    resetStoreVM(<span class="keyword">this</span>, state)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果使用了 plugins 那么挨个载入它们</span></span><br><span class="line">    plugins.forEach(<span class="function"><span class="params">plugin</span> =&gt;</span> plugin(<span class="keyword">this</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> useDevtools = options.devtools !== <span class="literal">undefined</span> ? options.devtools : Vue.config.devtools</span><br><span class="line">    <span class="keyword">if</span> (useDevtools) &#123;</span><br><span class="line">      devtoolPlugin(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="模块收集"><a href="#模块收集" class="headerlink" title="模块收集"></a>模块收集</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>._modules = <span class="keyword">new</span> ModuleCollection(options)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">ModuleCollection</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (rawRootModule) &#123;</span><br><span class="line">    <span class="comment">// register root module (Vuex.Store options)</span></span><br><span class="line">    <span class="keyword">this</span>.register([], rawRootModule, <span class="literal">false</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">get</span> (path) &#123;</span><br><span class="line">    <span class="keyword">return</span> path.reduce(<span class="function">(<span class="params"><span class="built_in">module</span>, key</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">module</span>.getChild(key)</span><br><span class="line">    &#125;, <span class="keyword">this</span>.root)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  getNamespace (path) &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="built_in">module</span> = <span class="keyword">this</span>.root</span><br><span class="line">    <span class="keyword">return</span> path.reduce(<span class="function">(<span class="params">namespace, key</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">module</span> = <span class="built_in">module</span>.getChild(key)</span><br><span class="line">      <span class="keyword">return</span> namespace + (<span class="built_in">module</span>.namespaced ? key + <span class="string">'/'</span> : <span class="string">''</span>)</span><br><span class="line">    &#125;, <span class="string">''</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update (rawRootModule) &#123;</span><br><span class="line">    update([], <span class="keyword">this</span>.root, rawRootModule)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  register (path, rawModule, runtime = <span class="literal">true</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">      assertRawModule(path, rawModule)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> newModule = <span class="keyword">new</span> Module(rawModule, runtime)</span><br><span class="line">    <span class="keyword">if</span> (path.length === <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="keyword">this</span>.root = newModule</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> parent = <span class="keyword">this</span>.get(path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">      parent.addChild(path[path.length - <span class="number">1</span>], newModule)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// register nested modules</span></span><br><span class="line">    <span class="keyword">if</span> (rawModule.modules) &#123;</span><br><span class="line">      forEachValue(rawModule.modules, (rawChildModule, key) =&gt; &#123;</span><br><span class="line">        <span class="keyword">this</span>.register(path.concat(key), rawChildModule, runtime)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  unregister (path) &#123;</span><br><span class="line">    <span class="keyword">const</span> parent = <span class="keyword">this</span>.get(path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">    <span class="keyword">const</span> key = path[path.length - <span class="number">1</span>]</span><br><span class="line">    <span class="keyword">const</span> child = parent.getChild(key)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!child) &#123;</span><br><span class="line">      <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">        <span class="built_in">console</span>.warn(</span><br><span class="line">          <span class="string">`[vuex] trying to unregister module '<span class="subst">$&#123;key&#125;</span>', which is `</span> +</span><br><span class="line">          <span class="string">`not registered`</span></span><br><span class="line">        )</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!child.runtime) &#123;</span><br><span class="line">      <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    parent.removeChild(key)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  isRegistered (path) &#123;</span><br><span class="line">    <span class="keyword">const</span> parent = <span class="keyword">this</span>.get(path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">    <span class="keyword">const</span> key = path[path.length - <span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (parent) &#123;</span><br><span class="line">      <span class="keyword">return</span> parent.hasChild(key)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着再看Module</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Module</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (rawModule, runtime) &#123;</span><br><span class="line">    <span class="keyword">this</span>.runtime = runtime</span><br><span class="line">    <span class="comment">// Store some children item</span></span><br><span class="line">    <span class="keyword">this</span>._children = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</span><br><span class="line">    <span class="comment">// Store the origin module object which passed by programmer</span></span><br><span class="line">    <span class="keyword">this</span>._rawModule = rawModule</span><br><span class="line">    <span class="keyword">const</span> rawState = rawModule.state</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Store the origin module's state</span></span><br><span class="line">    <span class="keyword">this</span>.state = (<span class="keyword">typeof</span> rawState === <span class="string">'function'</span> ? rawState() : rawState) || &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">get</span> namespaced () &#123;</span><br><span class="line">    <span class="keyword">return</span> !!<span class="keyword">this</span>._rawModule.namespaced</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  addChild (key, <span class="built_in">module</span>) &#123;</span><br><span class="line">    <span class="keyword">this</span>._children[key] = <span class="built_in">module</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  removeChild (key) &#123;</span><br><span class="line">    <span class="keyword">delete</span> <span class="keyword">this</span>._children[key]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  getChild (key) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>._children[key]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  hasChild (key) &#123;</span><br><span class="line">    <span class="keyword">return</span> key <span class="keyword">in</span> <span class="keyword">this</span>._children</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  update (rawModule) &#123;</span><br><span class="line">    <span class="keyword">this</span>._rawModule.namespaced = rawModule.namespaced</span><br><span class="line">    <span class="keyword">if</span> (rawModule.actions) &#123;</span><br><span class="line">      <span class="keyword">this</span>._rawModule.actions = rawModule.actions</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (rawModule.mutations) &#123;</span><br><span class="line">      <span class="keyword">this</span>._rawModule.mutations = rawModule.mutations</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (rawModule.getters) &#123;</span><br><span class="line">      <span class="keyword">this</span>._rawModule.getters = rawModule.getters</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachChild (fn) &#123;</span><br><span class="line">    forEachValue(<span class="keyword">this</span>._children, fn)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachGetter (fn) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._rawModule.getters) &#123;</span><br><span class="line">      forEachValue(<span class="keyword">this</span>._rawModule.getters, fn)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachAction (fn) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._rawModule.actions) &#123;</span><br><span class="line">      forEachValue(<span class="keyword">this</span>._rawModule.actions, fn)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  forEachMutation (fn) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._rawModule.mutations) &#123;</span><br><span class="line">      forEachValue(<span class="keyword">this</span>._rawModule.mutations, fn)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里调用 ModuleCollection 构造函数，通过 path 的长度判断是否为根 module，首先进行根 module 的注册，然后递归遍历所有的 module，子 module 添加其父 module 的 _children 属性上，最终形成一棵树</p>
+<h5 id="模块安装"><a href="#模块安装" class="headerlink" title="模块安装"></a>模块安装</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里是module处理的核心，包括处理根module、命名空间、action、mutation、getters和递归注册子module</span></span><br><span class="line">installModule(<span class="keyword">this</span>, state, [], <span class="keyword">this</span>._modules.root)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">installModule</span> (<span class="params">store, rootState, path, module, hot</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> isRoot = !path.length</span><br><span class="line">  <span class="comment">// 获取模块的命名空间</span></span><br><span class="line">  <span class="keyword">const</span> namespace = store._modules.getNamespace(path)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 存在命名空间时，加入到 moduleNamespaceMap 中</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">module</span>.namespaced) &#123;</span><br><span class="line">    <span class="keyword">if</span> (store._modulesNamespaceMap[namespace] &amp;&amp; __DEV__) &#123;</span><br><span class="line">      <span class="built_in">console</span>.error(<span class="string">`[vuex] duplicate namespace <span class="subst">$&#123;namespace&#125;</span> for the namespaced module <span class="subst">$&#123;path.join(<span class="string">'/'</span>)&#125;</span>`</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    store._modulesNamespaceMap[namespace] = <span class="built_in">module</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 如果当前不是子模块也不是热更新状态，那么就是新增子模块，这个时候要取到父模块</span></span><br><span class="line">  <span class="comment">// 然后插入到父模块的子模块列表中</span></span><br><span class="line">  <span class="keyword">if</span> (!isRoot &amp;&amp; !hot) &#123;</span><br><span class="line">    <span class="keyword">const</span> parentState = getNestedState(rootState, path.slice(<span class="number">0</span>, <span class="number">-1</span>))</span><br><span class="line">    <span class="keyword">const</span> moduleName = path[path.length - <span class="number">1</span>]</span><br><span class="line">    store._withCommit(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">        <span class="keyword">if</span> (moduleName <span class="keyword">in</span> parentState) &#123;</span><br><span class="line">          <span class="built_in">console</span>.warn(</span><br><span class="line">            <span class="string">`[vuex] state field "<span class="subst">$&#123;moduleName&#125;</span>" was overridden by a module with the same name at "<span class="subst">$&#123;path.join(<span class="string">'.'</span>)&#125;</span>"`</span></span><br><span class="line">          )</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      Vue.set(parentState, moduleName, <span class="built_in">module</span>.state)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 拿到当前的上下文环境</span></span><br><span class="line">  <span class="keyword">const</span> local = <span class="built_in">module</span>.context = makeLocalContext(store, namespace, path)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 使用模块的方法挨个为 mutation, action, getters, child 注册</span></span><br><span class="line">  <span class="built_in">module</span>.forEachMutation(<span class="function">(<span class="params">mutation, key</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> namespacedType = namespace + key</span><br><span class="line">    registerMutation(store, namespacedType, mutation, local)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">module</span>.forEachAction(<span class="function">(<span class="params">action, key</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> type = action.root ? key : namespace + key</span><br><span class="line">    <span class="keyword">const</span> handler = action.handler || action</span><br><span class="line">    registerAction(store, type, handler, local)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">module</span>.forEachGetter(<span class="function">(<span class="params">getter, key</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> namespacedType = namespace + key</span><br><span class="line">    registerGetter(store, namespacedType, getter, local)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="built_in">module</span>.forEachChild(<span class="function">(<span class="params">child, key</span>) =&gt;</span> &#123;</span><br><span class="line">    installModule(store, rootState, path.concat(key), child, hot)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先保存 namespaced 模块到 store._modulesNamespaceMap，再判断是否为根组件且不是 hot，得到父级 module 的 state 和当前 module 的 name，调用 Vue.set(parentState, moduleName, module.state)将当前 module 的 state 挂载到父 state 上。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2020/12/20/vue/vnode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -473,7 +592,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-04 14:37:42" itemprop="dateModified" datetime="2021-03-04T14:37:42+08:00">2021-03-04</time>
+                <time title="Modified: 2021-03-05 09:23:45" itemprop="dateModified" datetime="2021-03-05T09:23:45+08:00">2021-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -481,7 +600,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sblog/categories/vue%E5%88%86%E7%B1%BB/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
+                  <a href="/sblog/categories/vue/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
                 </span>
             </span>
 
@@ -564,6 +683,80 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2020/07/27/vue/reactive3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/sblog/images/avatar.gif">
+      <meta itemprop="name" content="shiyaping">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="shiyaping">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/sblog/2020/07/27/vue/reactive3/" class="post-title-link" itemprop="url">vue3.0响应式原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-27 09:49:44" itemprop="dateCreated datePublished" datetime="2020-07-27T09:49:44+08:00">2020-07-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 09:23:45" itemprop="dateModified" datetime="2021-03-05T09:23:45+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/sblog/categories/vue/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>ddd</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2020/07/27/vue/reactive2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -595,7 +788,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-04 14:38:32" itemprop="dateModified" datetime="2021-03-04T14:38:32+08:00">2021-03-04</time>
+                <time title="Modified: 2021-03-05 09:23:45" itemprop="dateModified" datetime="2021-03-05T09:23:45+08:00">2021-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -603,7 +796,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sblog/categories/vue%E5%88%86%E7%B1%BB/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
+                  <a href="/sblog/categories/vue/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
                 </span>
             </span>
 
@@ -645,7 +838,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2020/07/27/vue/reactive3/">
+    <link itemprop="mainEntityOfPage" href="https://guananny2.github.io/sblog/2020/07/16/vue-reactive/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/sblog/images/avatar.gif">
@@ -659,7 +852,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/sblog/2020/07/27/vue/reactive3/" class="post-title-link" itemprop="url">vue3.0响应式原理</a>
+            <a href="/sblog/2020/07/16/vue-reactive/" class="post-title-link" itemprop="url">vue2.0响应式原理</a>
         </h2>
 
         <div class="post-meta">
@@ -669,14 +862,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-07-27 09:49:44" itemprop="dateCreated datePublished" datetime="2020-07-27T09:49:44+08:00">2020-07-27</time>
+              <time title="Created: 2020-07-16 09:49:44" itemprop="dateCreated datePublished" datetime="2020-07-16T09:49:44+08:00">2020-07-16</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-24 09:46:33" itemprop="dateModified" datetime="2020-12-24T09:46:33+08:00">2020-12-24</time>
+                <time title="Modified: 2021-03-05 09:23:45" itemprop="dateModified" datetime="2021-03-05T09:23:45+08:00">2021-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -684,7 +877,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sblog/categories/vue%E5%88%86%E7%B1%BB/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
+                  <a href="/sblog/categories/vue/" itemprop="url" rel="index"><span itemprop="name">VUE</span></a>
                 </span>
             </span>
 
@@ -699,8 +892,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>ddd</p>
-
+          <p>在介绍响应式原理之前我们先来了解一下如何侦测对象的变化，目前侦测对象变化的方式有2种：Object.defineProperty和ES6的Proxy。在Vue2.0阶段，浏览器对Proxy的支持还不够理想，所以2.0还是基于Object.defineProperty来实现的。本文也是基于Object.defineProperty来介绍如何实现响应式，在下篇文章中也会基于Proxy来介绍Vue3.0如何实现响应式。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/sblog/2020/07/16/vue-reactive/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -864,14 +1064,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/sblog/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/sblog/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
