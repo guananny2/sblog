@@ -1,7 +1,7 @@
 ---
-title: 浏览器重排与重绘
+title: 什么是重排与重绘
 date: 2021-03-10 20:49:44
-tags: [chrome]
+tags: [chrome, render]
 categories: Chrome
 ---
 
